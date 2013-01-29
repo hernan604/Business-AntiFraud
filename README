@@ -1,0 +1,5 @@
+Business::AntiFraud
+
+Detect fraud on online sales.
+
+This module allows you to plugin multiple gateways to verify fraud.
