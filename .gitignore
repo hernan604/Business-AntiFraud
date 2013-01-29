@@ -1,0 +1,17 @@
+*.swp
+*.bak
+*.swn
+*.swm
+*.swl
+*.swo
+*.old
+blib*
+inc*
+*_local*
+dotest.sh
+nv2_api_local.conf
+META*
+cover*
+MYMETA.yml
+MYMETA.json
+Makefile
