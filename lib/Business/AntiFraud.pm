@@ -1,7 +1,23 @@
 package Business::AntiFraud;
-use Moo;
+use strict;
+use warnings;
+use Class::Load;
 
 our $VERSION     = '0.01';
+
+sub new {
+    my $class = shift;
+
+    my %data = ref $_[0] && ref $_[0] eq 'HASH' ? %{ $_[0] } : @_;
+
+    my $gateway = delete $data{gateway};
+    my $gateway_class = "Business::AntiFraud::Gateway::$gateway";
+
+    Class::Load::load_class($gateway_class);
+
+    return $gateway_class->new(%data);
+}
+
 
 =head1 NAME
 
@@ -10,8 +26,6 @@ Business::AntiFraud - Interface for multiple antifraud systems
 =head1 SYNOPSIS
 
   use Business::AntiFraud;
-  blah blah blah
-
 
 =head1 DESCRIPTION
 
