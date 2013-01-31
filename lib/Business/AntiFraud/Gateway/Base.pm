@@ -84,6 +84,15 @@ sub new_cart {
     my $buyer = $buyer_class->new( delete $info->{buyer} );
     $self->log->info("Built cart for buyer " . $buyer->email);
 
+    #===shipping_class===
+    my $shipping_class  = Class::Load::load_first_existing_class(
+        "Business::AntiFraud::Shipping::$gateway_name",
+        "Business::AntiFraud::Shipping"
+    );
+    my $shipping = $shipping_class->new( delete $info->{shipping} || {} );
+    $self->log->info("Built shipping address with class  " . $shipping_class );
+
+
     #===cart_class===
     my $cart_class  = Class::Load::load_first_existing_class(
         "Business::AntiFraud::Cart::$gateway_name",
@@ -93,6 +102,7 @@ sub new_cart {
         _gateway => $self,
         _items   => \@items,
         buyer    => $buyer,
+    #   shipping => $shipping,
         %$info,
     );
 }

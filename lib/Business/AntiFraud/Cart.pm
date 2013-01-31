@@ -10,6 +10,13 @@ has buyer => (
     isa => sub { $_[0]->isa('Business::AntiFraud::Buyer') or die "Must be a Business::AntiFraud::Buyer" },
 );
 
+has shipping => (
+    is => 'ro',
+    isa => sub {
+        $_[0]->isa('Business::AntiFraud::Shipping') or die "Must be a Business::AntiFraud::Shipping"
+    },
+);
+
 has tax => (
     coerce => \&stringified_money,
     required => 0,
