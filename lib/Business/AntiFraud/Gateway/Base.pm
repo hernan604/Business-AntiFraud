@@ -66,25 +66,29 @@ sub new_cart {
         $self->log->debug("Building a cart with: " . Dumper($info));
     }
 
-    my @items =
-      map { ref $_ eq 'Business::AntiFraud::Item' ? $_ : Business::AntiFraud::Item->new($_) }
+    my $gateway_name = ref $self;
+       $gateway_name =~ s/Business::AntiFraud::Gateway:://g;
+
+    #===item_class===
+    my $item_class = Class::Load::load_optional_class( "Business::AntiFraud::Item::$gateway_name" ) ?
+        "Business::AntiFraud::Item::$gateway_name" :
+        "Business::AntiFraud::Item" ;
+    my @items = map { ref $_ eq $item_class ? $_ : $item_class->new($_) }
       @{ delete $info->{items} || [] };
 
-    my $gateway_name = (split /::/, ref $self)[-1];
+    #===buyer_class===
     my $buyer_class  = Class::Load::load_first_existing_class(
         "Business::AntiFraud::Buyer::$gateway_name",
         "Business::AntiFraud::Buyer"
     );
-
     my $buyer = $buyer_class->new( delete $info->{buyer} );
-
     $self->log->info("Built cart for buyer " . $buyer->email);
 
+    #===cart_class===
     my $cart_class  = Class::Load::load_first_existing_class(
         "Business::AntiFraud::Cart::$gateway_name",
         "Business::AntiFraud::Cart"
     );
-
     return $cart_class->new(
         _gateway => $self,
         _items   => \@items,

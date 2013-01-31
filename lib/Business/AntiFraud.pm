@@ -10,7 +10,7 @@ sub new {
 
     my %data = ref $_[0] && ref $_[0] eq 'HASH' ? %{ $_[0] } : @_;
 
-    my $gateway = delete $data{gateway};
+    my $gateway = $data{gateway};
     my $gateway_class = "Business::AntiFraud::Gateway::$gateway";
 
     Class::Load::load_class($gateway_class);
@@ -29,12 +29,7 @@ Business::AntiFraud - Interface for multiple antifraud systems
 
 =head1 DESCRIPTION
 
-Stub documentation for this module was created by ExtUtils::ModuleMaker.
-It looks like the author of the extension was negligent enough
-to leave the stub unedited.
-
 Blah blah blah.
-
 
 =head1 USAGE
 
@@ -54,16 +49,10 @@ it and/or modify it under the same terms as Perl itself.
 The full text of the license can be found in the
 LICENSE file included with this module.
 
-
 =head1 SEE ALSO
 
 perl(1).
 
 =cut
 
-#################### main pod documentation end ###################
-
-
 1;
-# The preceding line will help the module return a true value
-
