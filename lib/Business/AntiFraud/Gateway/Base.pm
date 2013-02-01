@@ -5,7 +5,6 @@ use Email::Valid;
 use Business::AntiFraud::EmptyLogger;
 use HTML::Element;
 use Class::Load qw/load_first_existing_class/;
-use Data::Printer;
 
 has receiver_email => (
     isa => sub {
@@ -61,44 +60,52 @@ has form_encoding => (
 
 sub new_cart {
     my ( $self, $info ) = @_;
-
     if ($self->log->is_debug) {
         $self->log->debug("Building a cart with: " . Dumper($info));
     }
 
     my $gateway_name = ref $self;
-       $gateway_name =~ s/Business::AntiFraud::Gateway:://g;
+    $gateway_name =~ s/Business::AntiFraud::Gateway:://g;
 
-        my $item_class = Class::Load::load_optional_class( "Business::AntiFraud::Item::$gateway_name" ) ?
-            "Business::AntiFraud::Item::$gateway_name" :
-            "Business::AntiFraud::Item" ;
-        my @items = map { ref $_ eq $item_class ? $_ : $item_class->new($_) }
-          @{ delete $info->{items} || [] };
+    my $item_class = Class::Load::load_optional_class( "Business::AntiFraud::Item::$gateway_name" ) ?
+        "Business::AntiFraud::Item::$gateway_name" :
+        "Business::AntiFraud::Item" ;
+    my @items = map { ref $_ eq $item_class ? $_ : $item_class->new($_) }
+      @{ delete $info->{items} || [] };
 
-        my $buyer_class  = Class::Load::load_first_existing_class(
-            "Business::AntiFraud::Buyer::$gateway_name",
-            "Business::AntiFraud::Buyer"
-        );
-        my $buyer = $buyer_class->new( delete $info->{buyer} );
-        $self->log->info("Built cart for buyer " . $buyer->email);
+    my $buyer_class  = Class::Load::load_first_existing_class(
+        "Business::AntiFraud::Buyer::$gateway_name",
+        "Business::AntiFraud::Buyer"
+    );
+    my $buyer = $buyer_class->new( delete $info->{buyer} );
+    $self->log->info("Built cart for buyer " . $buyer->email);
 
-        my $shipping_class  = Class::Load::load_first_existing_class(
-            "Business::AntiFraud::Shipping::$gateway_name",
-            "Business::AntiFraud::Shipping"
-        );
-        my $shipping = $shipping_class->new( delete $info->{shipping} || {} );
-        $self->log->info("Built shipping address with class  " . $shipping_class );
+    my $shipping_class  = Class::Load::load_first_existing_class(
+        "Business::AntiFraud::Shipping::$gateway_name",
+        "Business::AntiFraud::Shipping"
+    );
+    my $shipping_vals = delete $info->{ shipping }||{};
+    $self->log->info("Built shipping address with class  " . $shipping_class );
 
-        my $cart_class  = Class::Load::load_first_existing_class(
-            "Business::AntiFraud::Cart::$gateway_name",
-            "Business::AntiFraud::Cart"
-        );
+
+    my $billing_class  = Class::Load::load_first_existing_class(
+        "Business::AntiFraud::Billing::$gateway_name",
+        "Business::AntiFraud::Billing"
+    );
+    my $billing_vals = delete $info->{ billing }||{};
+    $self->log->info("Built billing address with class  " . $billing_class );
+
+    my $cart_class  = Class::Load::load_first_existing_class(
+        "Business::AntiFraud::Cart::$gateway_name",
+        "Business::AntiFraud::Cart"
+    );
 
     return $cart_class->new(
         _gateway => $self,
         _items   => \@items,
         buyer    => $buyer,
-        shipping => $shipping,
+        shipping => $shipping_class->new( $shipping_vals ),
+        billing => $billing_class->new( $billing_vals ),
         %$info,
     );
 }

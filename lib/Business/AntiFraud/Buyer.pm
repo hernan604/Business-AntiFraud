@@ -2,7 +2,6 @@ package Business::AntiFraud::Buyer;
 use Moo;
 use Locale::Country ();
 use Email::Valid ();
-use Business::AntiFraud::Shipping;
 
 has email => (
     isa => sub {

@@ -7,13 +7,22 @@ use Business::AntiFraud::Types qw/stringified_money/;
 
 has buyer => (
     is => 'ro',
-    isa => sub { $_[0]->isa('Business::AntiFraud::Buyer') or die "Must be a Business::AntiFraud::Buyer" },
+    isa => sub {
+        $_[0]->isa('Business::AntiFraud::Buyer') or die "Must be a Business::AntiFraud::Buyer"
+    },
 );
 
 has shipping => (
     is => 'ro',
     isa => sub {
         $_[0]->isa('Business::AntiFraud::Shipping') or die "Must be a Business::AntiFraud::Shipping"
+    },
+);
+
+has billing => (
+    is => 'ro',
+    isa => sub {
+        $_[0]->isa('Business::AntiFraud::Billing') or die "Must be a Business::AntiFraud::Billing"
     },
 );
 
@@ -79,6 +88,8 @@ sub get_form_to_pay {
         payment_id => $payment,
         items      => [ @{ $self->_items } ], # make a copy for security
         buyer      => $self->buyer,
+        shipping   => $self->shipping,
+        billing    => $self->billing,
         cart       => $self,
     });
 }

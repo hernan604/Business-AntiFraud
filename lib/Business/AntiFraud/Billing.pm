@@ -1,6 +1,6 @@
-package Business::AntiFraud::Shipping;
+package Business::AntiFraud::Billing;
 use Moo;
-#shipping information... where is this package being shipped to?
+#billing information... who will pay for these products?
 
 has name               => ( is => 'rw' );
 has email              => ( is => 'rw' );
