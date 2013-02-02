@@ -12,6 +12,7 @@ has address_city       => ( is => 'rw' );
 has address_state      => ( is => 'rw' );
 has address_zip_code   => ( is => 'rw' );
 has address_country    => ( is => 'rw' );
+has address_complement => ( is => 'rw' );
 has phone              => ( is => 'rw' );
 has phone_prefix       => ( is => 'rw' );
 has celular            => ( is => 'rw' ); #OPT

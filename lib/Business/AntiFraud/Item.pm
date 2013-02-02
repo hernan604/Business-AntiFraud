@@ -42,4 +42,14 @@ has quantity => (
     is => 'ro',
 );
 
+has name => (
+    is => 'rw',
+    coerce => sub { '' . $_[0] },
+);
+
+has category => (
+    is => 'rw',
+    coerce => sub { '' . $_[0] },
+);
+
 1;
