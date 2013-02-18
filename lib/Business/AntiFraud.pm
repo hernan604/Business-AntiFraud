@@ -41,6 +41,10 @@ Blah blah blah.
     hernanlopes@gmail.com
     http://www.movimentoperl.com.br
 
+=head1 OTHER THANKS
+
+Other thanks goes to the creators of the Business CPI standard idea (André Walker) which i copied over into this module.
+
 =head1 COPYRIGHT
 
 This program is free software; you can redistribute
